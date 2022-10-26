@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Jackchow\Rbac;
+namespace Edwinhuish\ThinkRbac\Models;
 
 use Edwinhuish\ThinkRbac\Contracts\RoleInterface;
 use Edwinhuish\ThinkRbac\Traits\RoleTrait;

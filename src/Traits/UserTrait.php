@@ -9,14 +9,25 @@ declare(strict_types=1);
 
 namespace Edwinhuish\ThinkRbac\Traits;
 
+use think\Collection;
 use think\facade\Cache;
+use think\model\relation\BelongsToMany;
 
 trait UserTrait
 {
     /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = config('database.prefix') . config('rbac.user_table');
+
+    /**
      * Alias to eloquent many-to-many relation's attach() method.
      *
      * @param mixed $role
+     *
+     * @return $this
      */
     public function attachRole($role)
     {
@@ -29,27 +40,26 @@ trait UserTrait
         }
 
         $this->roles()->attach($role);
+
+        $this->forgetRoles();
+
+        return $this;
     }
 
     /**
      * Attach multiple roles to a user.
      *
      * @param mixed $roles
+     *
+     * @return $this
      */
     public function attachRoles($roles)
     {
         foreach ($roles as $role) {
             $this->attachRole($role);
         }
-    }
 
-    public function cachedRoles()
-    {
-        $cacheKey = 'rbac_roles_for_user_' . $this[$this->pk];
-
-        return Cache::remember($cacheKey, function () {
-            return $this->roles;
-        });
+        return $this;
     }
 
     /**
@@ -61,8 +71,8 @@ trait UserTrait
      */
     public function can($permission)
     {
-        foreach ($this->cachedRoles() as $role) {
-            foreach ($role->cachedPermissions() as $perm) {
+        foreach ($this->rememberRoles() as $role) {
+            foreach ($role->rememberPermissions() as $perm) {
                 if ($permission == $perm['name']) {
                     return true;
                 }
@@ -76,6 +86,8 @@ trait UserTrait
      * Alias to eloquent many-to-many relation's detach() method.
      *
      * @param mixed $role
+     *
+     * @return $this
      */
     public function detachRole($role)
     {
@@ -88,12 +100,16 @@ trait UserTrait
         }
 
         $this->roles()->detach($role);
+
+        return $this;
     }
 
     /**
      * Detach multiple roles from a user.
      *
      * @param mixed $roles
+     *
+     * @return $this
      */
     public function detachRoles($roles = null)
     {
@@ -104,6 +120,30 @@ trait UserTrait
         foreach ($roles as $role) {
             $this->detachRole($role);
         }
+
+        return $this;
+    }
+
+    /**
+     * Delete cache roles.
+     *
+     * @return $this
+     */
+    public function forgetRoles()
+    {
+        Cache::delete($this->getCacheKey());
+
+        return $this;
+    }
+
+    /**
+     * Cache roles.
+     */
+    public function rememberRoles(): Collection
+    {
+        return Cache::remember($this->getCacheKey(), function () {
+            return $this->roles;
+        });
     }
 
     /**
@@ -111,8 +151,13 @@ trait UserTrait
      *
      * @return mixed
      */
-    public function roles()
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(config('database.prefix') . config('rbac.role'), config('database.prefix') . config('rbac.role_user_table'), config('rbac.role_foreign_key'), config('rbac.user_foreign_key'));
+    }
+
+    private function getCacheKey(): string
+    {
+        return 'rbac_roles_for_user_' . $this->getKey();
     }
 }

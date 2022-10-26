@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Edwinhuish\ThinkRbac\Traits;
 
+use think\Collection;
 use think\facade\Cache;
 use think\model\relation\BelongsToMany;
 
@@ -26,7 +27,7 @@ trait RoleTrait
      *
      * @param object|array $permission
      *
-     * @return void
+     * @return $this
      */
     public function attachPermission($permission)
     {
@@ -38,7 +39,11 @@ trait RoleTrait
             $permission = $permission['id'];
         }
 
-        $this->perms()->attach($permission);
+        $this->permissions()->attach($permission);
+
+        $this->forgetPermissions();
+
+        return $this;
     }
 
     /**
@@ -46,22 +51,15 @@ trait RoleTrait
      *
      * @param mixed $permissions
      *
-     * @return void
+     * @return $this
      */
     public function attachPermissions($permissions)
     {
         foreach ($permissions as $permission) {
             $this->attachPermission($permission);
         }
-    }
 
-    public function cachedPermissions()
-    {
-        $cacheKey = 'rbac_permissions_for_role_' . $this[$this->pk];
-
-        return Cache::remember($cacheKey, function () {
-            return $this->perms;
-        });
+        return $this;
     }
 
     /**
@@ -81,7 +79,7 @@ trait RoleTrait
             $permission = $permission['id'];
         }
 
-        $this->perms()->detach($permission);
+        $this->permissions()->detach($permission);
     }
 
     /**
@@ -98,13 +96,56 @@ trait RoleTrait
         }
     }
 
-    public function perms(): BelongsToMany
+    /**
+     * Delete cache.
+     *
+     * @return $this
+     */
+    public function forgetPermissions()
+    {
+        Cache::delete($this->getCacheKey());
+
+        return $this;
+    }
+
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(config('rbac.permission'), config('rbac.permission_role_table'), config('rbac.permission_foreign_key'), config('rbac.role_foreign_key'));
+    }
+
+    /**
+     * Return cached permissions.
+     */
+    public function rememberPermissions(): Collection
+    {
+        return Cache::remember($this->getCacheKey(), function () {
+            return $this->permissions;
+        });
+    }
+
+    /**
+     * Save the inputted permissions.
+     *
+     * @param mixed $inputPermissions
+     *
+     * @return void
+     */
+    public function savePermissions($inputPermissions)
+    {
+        if (! empty($inputPermissions)) {
+            $this->permissions()->sync($inputPermissions);
+        } else {
+            $this->permissions()->detach();
+        }
     }
 
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(config('rbac.user'), config('rbac.role_user_table'), config('rbac.user_foreign_key'), config('rbac.role_foreign_key'));
+    }
+
+    private function getCacheKey()
+    {
+        return 'rbac_permissions_for_role_' . $this->getKey();
     }
 }
