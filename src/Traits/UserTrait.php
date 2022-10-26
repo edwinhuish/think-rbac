@@ -16,13 +16,6 @@ use think\model\relation\BelongsToMany;
 trait UserTrait
 {
     /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
-    protected $table = config('database.prefix') . config('rbac.user_table');
-
-    /**
      * Alias to eloquent many-to-many relation's attach() method.
      *
      * @param int|string|\think\Model $role

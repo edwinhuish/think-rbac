@@ -15,13 +15,6 @@ use think\model\relation\BelongsToMany;
 trait RoleTrait
 {
     /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
-    protected $table = config('database.prefix') . config('rbac.roles_table');
-
-    /**
      * Attach permission to current role.
      *
      * @param int|string|\think\Model $permission

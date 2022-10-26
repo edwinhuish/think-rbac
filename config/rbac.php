@@ -28,7 +28,7 @@ return [
     | This is the users table used by Rbac to save users to the database.
     |
     */
-    'user_table' => 'admin',
+    'user_table' => 'users',
 
     /*
     |--------------------------------------------------------------------------

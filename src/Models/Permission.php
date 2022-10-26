@@ -16,4 +16,11 @@ use think\Model;
 class Permission extends Model implements PermissionInterface
 {
     use PermissionTrait;
+
+    public function __construct()
+    {
+        $this->table = config('database.prefix') . config('rbac.permissions_table');
+
+        parent::__construct();
+    }
 }

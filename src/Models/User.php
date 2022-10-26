@@ -16,4 +16,11 @@ use think\Model;
 class User extends Model implements UserInterface
 {
     use UserTrait;
+
+    public function __construct()
+    {
+        $this->table = config('database.prefix') . config('rbac.user_table');
+
+        parent::__construct();
+    }
 }

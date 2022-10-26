@@ -16,4 +16,11 @@ use think\Model;
 class Role extends Model implements RoleInterface
 {
     use RoleTrait;
+
+    public function __construct()
+    {
+        $this->table = config('database.prefix') . config('rbac.roles_table');
+
+        parent::__construct();
+    }
 }
