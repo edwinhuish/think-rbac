@@ -39,7 +39,7 @@ return [
     | the role if it is in a different namespace.
     |
     */
-    'role' => \app\admin\model\Role::class,
+    'role' => \Edwinhuish\ThinkRbac\Models\Role::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -60,7 +60,7 @@ return [
     | Update the permission if it is in a different namespace.
     |
     */
-    'permission' => \app\admin\model\Permission::class,
+    'permission' => \Edwinhuish\ThinkRbac\Models\Permission::class,
 
     /*
     |--------------------------------------------------------------------------
