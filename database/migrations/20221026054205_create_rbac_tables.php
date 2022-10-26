@@ -56,7 +56,7 @@ class CreateRbacTables extends Migrator
 
         $table->addColumn(Column::integer('sorts')->setDefault(0)->setComment('排序'));
 
-        $table->addTimestamps();
+        $table->addTimestamps('created_at', 'updated_at');
 
         $table->addIndex(['name'], ['unique' => true]);
 
@@ -71,7 +71,7 @@ class CreateRbacTables extends Migrator
         $table->addColumn(Column::string('title')->setDefault('')->setComment('角色中文名称'));
         $table->addColumn(Column::string('description')->setDefault('')->setComment('角色描述'));
 
-        $table->addTimestamps();
+        $table->addTimestamps('created_at', 'updated_at');
 
         $table->addIndex(['name'], ['unique' => true]);
 
@@ -98,8 +98,8 @@ class CreateRbacTables extends Migrator
         $table->addColumn(Column::string('password', 40)->setComment('密码'));
         $table->addColumn(Column::dateTime('last_login_time')->setNullable()->setComment('最后登录时间'));
 
-        $table->addTimestamps();
-        $table->addSoftDelete();
+        $table->addTimestamps('created_at', 'updated_at');
+        $table->addColumn(Column::integer('delete_time')->setDefault(0)->setComment('删除时间戳，0 为未删除。（用 int 有效避免软删除 index 唯一问题）'));
 
         $table->addIndex(['username', 'delete_time'], ['type' => 'unique']);
 
