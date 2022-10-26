@@ -38,9 +38,6 @@ class CreateRbacTables extends Migrator
         $table->addColumn(Column::integer('permission_id')->setUnsigned()->setComment('权限表的ID'));
         $table->addColumn(Column::integer('role_id')->setUnsigned()->setComment('角色表的ID'));
 
-        $table->addForeignKey('permission_id', config('rbac.permissions_table', 'permissions'), 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE']);
-        $table->addForeignKey('role_id', config('rbac.roles_table', 'roles'), 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE']);
-
         $table->addIndex(['permission_id', 'role_id']);
 
         $table->create();
@@ -56,7 +53,7 @@ class CreateRbacTables extends Migrator
 
         $table->addColumn(Column::integer('sorts')->setDefault(0)->setComment('排序'));
 
-        $table->addTimestamps('created_at', 'updated_at');
+        $table->addTimestamps();
 
         $table->addIndex(['name'], ['unique' => true]);
 
@@ -71,7 +68,7 @@ class CreateRbacTables extends Migrator
         $table->addColumn(Column::string('title')->setDefault('')->setComment('角色中文名称'));
         $table->addColumn(Column::string('description')->setDefault('')->setComment('角色描述'));
 
-        $table->addTimestamps('created_at', 'updated_at');
+        $table->addTimestamps();
 
         $table->addIndex(['name'], ['unique' => true]);
 
@@ -84,9 +81,6 @@ class CreateRbacTables extends Migrator
 
         $table->addColumn(Column::bigInteger('user_id')->setUnsigned()->setComment('用户表的ID'));
         $table->addColumn(Column::integer('role_id')->setUnsigned()->setComment('角色表的ID'));
-
-        $table->addForeignKey('user_id', config('rbac.user_table', 'users'), 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE']);
-        $table->addForeignKey('role_id', config('rbac.roles_table', 'roles'), 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE']);
 
         $table->addIndex(['user_id', 'role_id']);
 
