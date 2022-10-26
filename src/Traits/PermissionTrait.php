@@ -13,6 +13,8 @@ use think\model\relation\BelongsToMany;
 
 trait PermissionTrait
 {
+    protected $table = config('database.prefix') . config('rbac.permissions_table');
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(config('rbac.role'), config('rbac.permission_role_table'), config('rbac.role_foreign_key'), config('rbac.permission_foreign_key'));

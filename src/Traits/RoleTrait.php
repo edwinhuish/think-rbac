@@ -15,6 +15,13 @@ use think\model\relation\BelongsToMany;
 trait RoleTrait
 {
     /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = config('database.prefix') . config('rbac.roles_table');
+
+    /**
      * Attach permission to current role.
      *
      * @param object|array $permission
@@ -91,7 +98,7 @@ trait RoleTrait
         }
     }
 
-    public function permissions(): BelongsToMany
+    public function perms(): BelongsToMany
     {
         return $this->belongsToMany(config('rbac.permission'), config('rbac.permission_role_table'), config('rbac.permission_foreign_key'), config('rbac.role_foreign_key'));
     }

@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Edwinhuish\ThinkRbac\Contracts;
 
-use think\model\relation\BelongsToMany;
-
 interface RoleInterface
 {
     /**
@@ -18,13 +16,57 @@ interface RoleInterface
      *
      * @param object|array $permission
      *
-     * @return static
+     * @return void
      */
     public function attachPermission($permission);
 
-    public function permissions(): BelongsToMany;
+    /**
+     * Attach multiple permissions to current role.
+     *
+     * @param mixed $permissions
+     *
+     * @return void
+     */
+    public function attachPermissions($permissions);
 
-    public function removePermission(int $permissionId): static;
+    /**
+     * Detach permission form current role.
+     *
+     * @param object|array $permission
+     *
+     * @return void
+     */
+    public function detachPermission($permission);
 
-    public function users():BelongsToMany;
+    /**
+     * Detach multiple permissions from current role.
+     *
+     * @param mixed $permissions
+     *
+     * @return void
+     */
+    public function detachPermissions($permissions);
+
+    /**
+     * Many-to-Many relations with Permission.
+     *
+     * @return mixed
+     */
+    public function perms();
+
+    /**
+     * Save the inputted permissions.
+     *
+     * @param mixed $inputPermissions
+     *
+     * @return void
+     */
+    public function savePermissions($inputPermissions);
+
+    /**
+     * Many-to-Many relations with the user model.
+     *
+     * @return mixed
+     */
+    public function users();
 }

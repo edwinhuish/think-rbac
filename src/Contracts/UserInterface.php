@@ -9,16 +9,40 @@ declare(strict_types=1);
 
 namespace Edwinhuish\ThinkRbac\Contracts;
 
-use think\model\relation\BelongsToMany;
-
 interface UserInterface
 {
+    /**
+     * Alias to eloquent many-to-many relation's attach() method.
+     *
+     * @param mixed $role
+     */
+    public function attachRole($role);
 
-    public function addRole(int $roleId): static;
+    /**
+     * Attach multiple roles to a user.
+     *
+     * @param mixed $roles
+     */
+    public function attachRoles($roles);
 
-    public function removeRole(int $roleId): static;
+    /**
+     * Alias to eloquent many-to-many relation's detach() method.
+     *
+     * @param mixed $role
+     */
+    public function detachRole($role);
 
-    public function roles():BelongsToMany;
+    /**
+     * Detach multiple roles from a user.
+     *
+     * @param mixed $roles
+     */
+    public function detachRoles($roles);
 
-    public function can(string $permission_name):bool;
+    /**
+     *  Many-to-Many relations with Role.
+     *
+     * @return mixed
+     */
+    public function roles();
 }
