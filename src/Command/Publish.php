@@ -26,7 +26,6 @@ class Publish extends Command
 
         $this->copyTo(__DIR__ . '/../../config/', $this->app->getConfigPath());
         $this->copyTo(__DIR__ . '/../../database/migrations/', $root . '/database/migrations/');
-        $this->copyTo(__DIR__ . '/../../database/seeds/', $root . '/database/seeds/');
 
         $output->writeln('成功复制文件到项目文件夹。');
     }

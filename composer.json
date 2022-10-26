@@ -21,6 +21,9 @@
             "Edwinhuish\\ThinkRbac\\": "src/"
         }
     },
+    "archive": {
+        "exclude": ["/.devcontainer", "/.header-comment.tpl"]
+    },
     "extra": {
         "think": {
             "services": [
