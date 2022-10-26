@@ -12,16 +12,7 @@ use think\migration\Migrator;
 
 class CreateRbacTables extends Migrator
 {
-    public function down()
-    {
-        // $this->table(config('rbac.user_table', 'users'))->drop();
-        $this->table(config('rbac.roles_table', 'roles'))->drop();
-        $this->table(config('rbac.role_user_table', 'role_user'))->drop();
-        $this->table(config('rbac.permissions_table', 'permissions'))->drop();
-        $this->table(config('rbac.permission_role_table', 'permission_role'))->drop();
-    }
-
-    public function up()
+    public function change()
     {
         // $this->createUserTable();
 
