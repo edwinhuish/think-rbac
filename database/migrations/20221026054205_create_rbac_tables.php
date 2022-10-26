@@ -14,7 +14,7 @@ class CreateRbacTables extends Migrator
 {
     public function down()
     {
-        $this->table(config('rbac.user_table', 'users'))->drop();
+        // $this->table(config('rbac.user_table', 'users'))->drop();
         $this->table(config('rbac.roles_table', 'roles'))->drop();
         $this->table(config('rbac.role_user_table', 'role_user'))->drop();
         $this->table(config('rbac.permissions_table', 'permissions'))->drop();
@@ -23,6 +23,8 @@ class CreateRbacTables extends Migrator
 
     public function up()
     {
+        // $this->createUserTable();
+
         $this->createRoleTable();
 
         $this->createRoleUserTable();
@@ -84,6 +86,22 @@ class CreateRbacTables extends Migrator
         $table->addColumn(Column::integer('role_id')->setUnsigned()->setComment('角色表的ID'));
 
         $table->addIndex(['user_id', 'role_id']);
+
+        $table->create();
+    }
+
+    private function createUserTable()
+    {
+        $table = $this->table(config('rbac.user_table', 'users'), ['comment' => '用户表']);
+
+        $table->addColumn(Column::string('username', 20)->setComment('用户名'));
+        $table->addColumn(Column::string('password', 40)->setComment('密码'));
+        $table->addColumn(Column::dateTime('last_login_time')->setNullable()->setComment('最后登录时间'));
+
+        $table->addTimestamps();
+        $table->addSoftDelete();
+
+        $table->addIndex(['username', 'delete_time'], ['type' => 'unique']);
 
         $table->create();
     }
