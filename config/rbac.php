@@ -1,6 +1,34 @@
 <?php
 
+/**
+ * @author Edwin Xu <171336747@qq.com>
+ * @version 2022-10-26
+ */
+
+declare(strict_types=1);
+
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rbac User Model
+    |--------------------------------------------------------------------------
+    |
+    | This is the User model used by Rbac to create correct relations.
+    | Update the user if it is in a different namespace.
+    |
+    */
+    'user' => \app\admin\model\Admin::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rbac Users Table
+    |--------------------------------------------------------------------------
+    |
+    | This is the users table used by Rbac to save users to the database.
+    |
+    */
+    'user_table' => 'admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -11,7 +39,7 @@ return [
     | the role if it is in a different namespace.
     |
     */
-    'role' => 'app\admin\model\Roles',
+    'role' => \app\admin\model\Role::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +60,7 @@ return [
     | Update the permission if it is in a different namespace.
     |
     */
-    'permission' => 'app\admin\model\Permissions',
+    'permission' => \app\admin\model\Permission::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -80,27 +108,6 @@ return [
     |--------------------------------------------------------------------------
     */
     'role_foreign_key' => 'role_id',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rbac User Model
-    |--------------------------------------------------------------------------
-    |
-    | This is the User model used by Rbac to create correct relations.
-    | Update the user if it is in a different namespace.
-    |
-    */
-    'user' => 'app\admin\model\Admins',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rbac Users Table
-    |--------------------------------------------------------------------------
-    |
-    | This is the users table used by Rbac to save users to the database.
-    |
-    */
-    'user_table' => 'admins',
 
     /*
     |--------------------------------------------------------------------------

@@ -1,0 +1,63 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.231.5/containers/php
+{
+  "name": "php",
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "${localWorkspaceFolder}",
+  "customizations": {
+    "vscode": {
+      // Set *default* container specific settings.json values on container create.
+      "settings": {
+        "[php]": {
+          "editor.defaultFormatter": "junstyle.php-cs-fixer"
+        },
+        "php-cs-fixer.executablePath": "${extensionPath}/php-cs-fixer.phar",
+        "php-cs-fixer.onsave": true
+      },
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        //
+        // php 插件
+        //
+        "xdebug.php-debug",
+        // "mrmlnc.vscode-apache",
+        // "kokororin.vscode-phpfmt", // php formater
+        "junstyle.php-cs-fixer", // php-cs-fixer
+        "bmewburn.vscode-intelephense-client", // php intelephense
+        // "phiter.phpstorm-snippets",
+        //
+        // NODE 插件
+        //
+        // // "octref.vetur",
+        // "Vue.volar",
+        // "dbaeumer.vscode-eslint",
+        // "sibiraj-s.vscode-scss-formatter",
+        // "esbenp.prettier-vscode",
+        // "eg2.vscode-npm-script", // npm support for VS Code
+        // "christian-kohler.path-intellisense", // Visual Studio Code plugin that autocompletes filenames
+        //
+        // 可选
+        //
+        // "jock.svg", // SVG Coding, Minify, Pretty, Preview All-In-One
+        //
+        // 公共插件
+        //
+        "IronGeek.vscode-env",
+        "EditorConfig.EditorConfig",
+        "Natizyskunk.sftp",
+        "eamodio.gitlens",
+        "donjayamanne.githistory"
+      ]
+    }
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [],
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "sudo chmod a+x \"$(pwd)\" && sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html && apache2ctl start",
+  // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "www",
+  "features": {}
+}

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: php
+      args:
+        - VARIANT=7.4-apache-bullseye
+    command: sleep infinity
+    env_file: docker.env
+    environment:
+      - PHP_INI_SCAN_DIR=:/php-conf.d
+    working_dir: $PWD
+    volumes:
+      - $PWD:$PWD
+      # Forwards the local Docker socket to the container.
+      - /var/run/docker.sock:/var/run/docker-host.sock
+      - ./php/conf.d:/php-conf.d
+      - ~/.ssh:/home/www/.ssh
