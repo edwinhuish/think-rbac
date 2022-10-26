@@ -18,7 +18,7 @@ return [
     | Update the user if it is in a different namespace.
     |
     */
-    'user' => \app\admin\model\Admin::class,
+    'user' => \Edwinhuish\ThinkRbac\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------

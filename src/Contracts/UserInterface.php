@@ -17,22 +17,23 @@ interface UserInterface
     /**
      * Alias to eloquent many-to-many relation's attach() method.
      *
-     * @param mixed $role
-     *
-     * @return $this
+     * @param int|string|\think\Model $role
      */
-    public function attachRole($role);
+    public function attachRole($role): \think\model\Pivot;
 
     /**
      * Attach multiple roles to a user.
      *
-     * @param mixed $roles
+     * @param int[]|string[]|\think\Model[] $roles
      *
-     * @return $this
+     * @return \think\model\Pivot[]|Collection
      */
-    public function attachRoles($roles);
+    public function attachRoles($roles): Collection;
 
-    public function cachedRoles();
+    /**
+     * Cache roles.
+     */
+    public function cachedRoles(): array;
 
     /**
      * Check if user has a permission by its name.
@@ -44,32 +45,23 @@ interface UserInterface
     /**
      * Alias to eloquent many-to-many relation's detach() method.
      *
-     * @param mixed $role
-     *
-     * @return $this
+     * @param int|string|\think\Model $role
      */
-    public function detachRole($role);
+    public function detachRole($role): bool;
 
     /**
      * Detach multiple roles from a user.
      *
-     * @param mixed $roles
+     * @param int[]|string[]|\think\Model[] $roles
+     */
+    public function detachRoles($roles = null): int;
+
+    /**
+     * refresh cache roles.
      *
      * @return $this
      */
-    public function detachRoles($roles);
-
-    /**
-     * Delete cache roles.
-     *
-     * @return $this
-     */
-    public function forgetRoles();
-
-    /**
-     * Cache roles.
-     */
-    public function rememberRoles(): Collection;
+    public function refreshRoles();
 
     /**
      *  Many-to-Many relations with Role.

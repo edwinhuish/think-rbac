@@ -25,54 +25,52 @@ trait UserTrait
     /**
      * Alias to eloquent many-to-many relation's attach() method.
      *
-     * @param mixed $role
-     *
-     * @return $this
+     * @param int|string|\think\Model $role
      */
-    public function attachRole($role)
+    public function attachRole($role): \think\model\Pivot
     {
-        if (is_object($role)) {
-            $role = $role->getKey();
-        }
-
-        if (is_array($role)) {
-            $role = $role['id'];
-        }
-
-        $this->roles()->attach($role);
-
-        $this->forgetRoles();
-
-        return $this;
+        return $this->roles()->attach($role);
     }
 
     /**
      * Attach multiple roles to a user.
      *
-     * @param mixed $roles
+     * @param int[]|string[]|\think\Model[] $roles
      *
-     * @return $this
+     * @return \think\model\Pivot[]|Collection
      */
-    public function attachRoles($roles)
+    public function attachRoles($roles): Collection
     {
-        foreach ($roles as $role) {
-            $this->attachRole($role);
-        }
+        $ids = collect($roles)->map(function ($role) {
+            if ($role instanceof \think\Model) {
+                return $role->getKey();
+            }
 
-        return $this;
+            return $role;
+        })->toArray();
+
+        return collect($this->roles()->attach($ids));
+    }
+
+    /**
+     * Cache roles.
+     */
+    public function cachedRoles(): array
+    {
+        return Cache::remember($this->getCacheKey(), function () {
+            return $this->roles()->with('permissions')->select()->toArray();
+        });
     }
 
     /**
      * Check if user has a permission by its name.
      *
      * @param string|array $permission permission string or array of permissions
-     *
-     * @return bool
      */
-    public function can($permission)
+    public function can($permission): bool
     {
-        foreach ($this->rememberRoles() as $role) {
-            foreach ($role->rememberPermissions() as $perm) {
+        foreach ($this->cachedRoles() as $role) {
+            foreach ($role->permissions as $perm) {
                 if ($permission == $perm['name']) {
                     return true;
                 }
@@ -85,51 +83,41 @@ trait UserTrait
     /**
      * Alias to eloquent many-to-many relation's detach() method.
      *
-     * @param mixed $role
-     *
-     * @return $this
+     * @param int|string|\think\Model $role
      */
-    public function detachRole($role)
+    public function detachRole($role): bool
     {
-        if (is_object($role)) {
-            $role = $role->getKey();
-        }
-
-        if (is_array($role)) {
-            $role = $role['id'];
-        }
-
-        $this->roles()->detach($role);
-
-        return $this;
+        return (bool) $this->roles()->detach($role);
     }
 
     /**
      * Detach multiple roles from a user.
      *
-     * @param mixed $roles
-     *
-     * @return $this
+     * @param int[]|string[]|\think\Model[] $roles
      */
-    public function detachRoles($roles = null)
+    public function detachRoles($roles = null): int
     {
         if (! $roles) {
             $roles = $this->roles()->get();
         }
 
-        foreach ($roles as $role) {
-            $this->detachRole($role);
-        }
+        $roleIds = collect($roles)->map(function ($role) {
+            if ($role instanceof \think\Model) {
+                return $role->getKey();
+            }
 
-        return $this;
+            return $role;
+        })->toArray();
+
+        return $this->roles()->detach($roleIds);
     }
 
     /**
-     * Delete cache roles.
+     * refresh cache roles.
      *
      * @return $this
      */
-    public function forgetRoles()
+    public function refreshRoles()
     {
         Cache::delete($this->getCacheKey());
 
@@ -137,19 +125,7 @@ trait UserTrait
     }
 
     /**
-     * Cache roles.
-     */
-    public function rememberRoles(): Collection
-    {
-        return Cache::remember($this->getCacheKey(), function () {
-            return $this->roles;
-        });
-    }
-
-    /**
      * Many-to-Many relations with Role.
-     *
-     * @return mixed
      */
     public function roles(): BelongsToMany
     {

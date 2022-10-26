@@ -17,45 +17,38 @@ interface RoleInterface
     /**
      * Attach permission to current role.
      *
-     * @param object|array $permission
+     * @param int|string|\think\Model $permission
      *
-     * @return $this
+     * @return \think\model\Pivot
      */
     public function attachPermission($permission);
 
     /**
      * Attach multiple permissions to current role.
      *
-     * @param mixed $permissions
+     * @param int[]|string[]|\think\Model[] $permissions
      *
-     * @return $this
+     * @return \think\model\Pivot[]|Collection
      */
-    public function attachPermissions($permissions);
+    public function attachPermissions($permissions): Collection;
 
     /**
-     * Detach permission form current role.
+     * Detach permission from current role.
      *
-     * @param object|array $permission
+     * @param int|string|\think\Model $permission
      *
-     * @return $this
+     * @return bool result
      */
-    public function detachPermission($permission);
+    public function detachPermission($permission): bool;
 
     /**
      * Detach multiple permissions from current role.
      *
-     * @param mixed $permissions
+     * @param int[]|string[]|\think\Models $permissions
      *
-     * @return $this
+     * @return int detach count
      */
-    public function detachPermissions($permissions);
-
-    /**
-     * Delete cache.
-     *
-     * @return $this
-     */
-    public function forgetPermissions();
+    public function detachPermissions($permissions): int;
 
     /**
      * Many-to-Many relations with Permission.
@@ -63,18 +56,13 @@ interface RoleInterface
     public function permissions(): BelongsToMany;
 
     /**
-     * Return cached permissions.
-     */
-    public function rememberPermissions(): Collection;
-
-    /**
      * Save the inputted permissions.
      *
-     * @param mixed $inputPermissions
+     * @param int[]|string[]|\think\Model[] $inputPermissions
      *
      * @return $this
      */
-    public function savePermissions($inputPermissions);
+    public function syncPermissions($inputPermissions);
 
     /**
      * Many-to-Many relations with the user model.

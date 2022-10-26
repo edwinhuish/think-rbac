@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Edwinhuish\ThinkRbac\Traits;
 
 use think\Collection;
-use think\facade\Cache;
 use think\model\relation\BelongsToMany;
 
 trait RoleTrait
@@ -25,87 +24,65 @@ trait RoleTrait
     /**
      * Attach permission to current role.
      *
-     * @param object|array $permission
-     *
-     * @return $this
+     * @param int|string|\think\Model $permission
      */
-    public function attachPermission($permission)
+    public function attachPermission($permission): \think\model\Pivot
     {
-        if (is_object($permission)) {
-            $permission = $permission->getKey();
-        }
-
-        if (is_array($permission)) {
-            $permission = $permission['id'];
-        }
-
-        $this->permissions()->attach($permission);
-
-        $this->forgetPermissions();
-
-        return $this;
+        return $this->permissions()->attach($permission);
     }
 
     /**
      * Attach multiple permissions to current role.
      *
-     * @param mixed $permissions
+     * @param int[]|string[]|\think\Model[] $permissions
      *
-     * @return $this
+     * @return \think\model\Pivot[]|Collection
      */
-    public function attachPermissions($permissions)
+    public function attachPermissions($permissions): Collection
     {
-        foreach ($permissions as $permission) {
-            $this->attachPermission($permission);
-        }
+        $permIds = collect($permissions)->map(function ($perm) {
+            if ($perm instanceof \think\Model) {
+                return $perm->getKey();
+            }
 
-        return $this;
+            return $perm;
+        })->toArray();
+
+        return collect($this->permissions()->attach($permIds));
     }
 
     /**
      * Detach permission from current role.
      *
-     * @param object|array $permission
+     * @param int|string|\think\Model $permission
      *
-     * @return void
+     * @return bool result
      */
-    public function detachPermission($permission)
+    public function detachPermission($permission): bool
     {
-        if (is_object($permission)) {
-            $permission = $permission->getKey();
-        }
+        $deleted = $this->permissions()->detach($permission);
 
-        if (is_array($permission)) {
-            $permission = $permission['id'];
-        }
-
-        $this->permissions()->detach($permission);
+        return (bool) $deleted;
     }
 
     /**
      * Detach multiple permissions from current role.
      *
-     * @param mixed $permissions
+     * @param int[]|string[]|\think\Models $permissions
      *
-     * @return void
+     * @return int detach count
      */
-    public function detachPermissions($permissions)
+    public function detachPermissions($permissions): int
     {
-        foreach ($permissions as $permission) {
-            $this->detachPermission($permission);
-        }
-    }
+        $permIds = collect($permissions)->map(function ($perm) {
+            if ($perm instanceof \think\Model) {
+                return $perm->getKey();
+            }
 
-    /**
-     * Delete cache.
-     *
-     * @return $this
-     */
-    public function forgetPermissions()
-    {
-        Cache::delete($this->getCacheKey());
+            return $perm;
+        })->toArray();
 
-        return $this;
+        return $this->permissions()->detach($permIds);
     }
 
     public function permissions(): BelongsToMany
@@ -114,38 +91,32 @@ trait RoleTrait
     }
 
     /**
-     * Return cached permissions.
-     */
-    public function rememberPermissions(): Collection
-    {
-        return Cache::remember($this->getCacheKey(), function () {
-            return $this->permissions;
-        });
-    }
-
-    /**
      * Save the inputted permissions.
      *
-     * @param mixed $inputPermissions
+     * @param int[]|string[]|\think\Model[] $inputPermissions
      *
-     * @return void
+     * @return $this
      */
-    public function savePermissions($inputPermissions)
+    public function syncPermissions($inputPermissions)
     {
         if (! empty($inputPermissions)) {
-            $this->permissions()->sync($inputPermissions);
+            $permIds = collect($inputPermissions)->map(function ($perm) {
+                if ($perm instanceof \think\Model) {
+                    return $perm->getKey();
+                }
+
+                return $perm;
+            })->toArray();
+            $this->permissions()->sync($permIds);
         } else {
             $this->permissions()->detach();
         }
+
+        return $this;
     }
 
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(config('rbac.user'), config('rbac.role_user_table'), config('rbac.user_foreign_key'), config('rbac.role_foreign_key'));
-    }
-
-    private function getCacheKey()
-    {
-        return 'rbac_permissions_for_role_' . $this->getKey();
     }
 }
