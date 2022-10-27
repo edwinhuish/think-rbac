@@ -2,7 +2,7 @@
 
 /**
  * @author Edwin Xu <171336747@qq.com>
- * @version 2022-10-26
+ * @version 2022-10-27
  */
 
 declare(strict_types=1);
@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Edwinhuish\ThinkRbac\Traits;
 
 use think\Collection;
-use think\facade\Cache;
 use think\model\relation\BelongsToMany;
+use think\model\relation\HasManyThrough;
 
 trait UserTrait
 {
@@ -46,31 +46,17 @@ trait UserTrait
     }
 
     /**
-     * Cache roles.
-     */
-    public function cachedRoles(): array
-    {
-        return Cache::remember($this->getCacheKey(), function () {
-            return $this->roles()->with('permissions')->select()->toArray();
-        });
-    }
-
-    /**
      * Check if user has a permission by its name.
      *
-     * @param string|array $permission permission string or array of permissions
+     * @param string|string[] $permission permission string or array of permissions
      */
     public function can($permission): bool
     {
-        foreach ($this->cachedRoles() as $role) {
-            foreach ($role->permissions as $perm) {
-                if ($permission == $perm['name']) {
-                    return true;
-                }
-            }
+        if (is_array($permission)) {
+            return $this->permissions()->where('name', 'IN', $permission)->count() === count($permission);
         }
 
-        return false;
+        return (bool) $this->permissions()->where('name', $permission)->count();
     }
 
     /**
@@ -106,15 +92,11 @@ trait UserTrait
     }
 
     /**
-     * refresh cache roles.
-     *
-     * @return $this
+     * Permissions.
      */
-    public function refreshRoles()
+    public function permissions(): HasManyThrough
     {
-        Cache::delete($this->getCacheKey());
-
-        return $this;
+        return $this->hasManyThrough(config('rbac.permission'), config('rbac.role'), config('rbac.user_foreign_key'), config('rbac.role_foreign_key'));
     }
 
     /**
@@ -123,10 +105,5 @@ trait UserTrait
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(config('database.prefix') . config('rbac.role'), config('database.prefix') . config('rbac.role_user_table'), config('rbac.role_foreign_key'), config('rbac.user_foreign_key'));
-    }
-
-    private function getCacheKey(): string
-    {
-        return 'rbac_roles_for_user_' . $this->getKey();
     }
 }

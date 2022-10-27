@@ -2,7 +2,7 @@
 
 /**
  * @author Edwin Xu <171336747@qq.com>
- * @version 2022-10-26
+ * @version 2022-10-27
  */
 
 declare(strict_types=1);
@@ -11,6 +11,7 @@ namespace Edwinhuish\ThinkRbac\Contracts;
 
 use think\Collection;
 use think\model\relation\BelongsToMany;
+use think\model\relation\HasManyThrough;
 
 interface UserInterface
 {
@@ -31,14 +32,9 @@ interface UserInterface
     public function attachRoles($roles): Collection;
 
     /**
-     * Cache roles.
-     */
-    public function cachedRoles(): array;
-
-    /**
      * Check if user has a permission by its name.
      *
-     * @param string|array $permission permission string or array of permissions
+     * @param string|string[] $permission permission string or array of permissions
      */
     public function can($permission): bool;
 
@@ -57,16 +53,12 @@ interface UserInterface
     public function detachRoles($roles = null): int;
 
     /**
-     * refresh cache roles.
-     *
-     * @return $this
+     * Permission.
      */
-    public function refreshRoles();
+    public function permissions(): HasManyThrough;
 
     /**
      *  Many-to-Many relations with Role.
-     *
-     * @return mixed
      */
     public function roles(): BelongsToMany;
 }

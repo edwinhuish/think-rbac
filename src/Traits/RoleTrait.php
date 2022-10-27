@@ -2,7 +2,7 @@
 
 /**
  * @author Edwin Xu <171336747@qq.com>
- * @version 2022-10-26
+ * @version 2022-10-27
  */
 
 declare(strict_types=1);
@@ -42,6 +42,20 @@ trait RoleTrait
         })->toArray();
 
         return collect($this->permissions()->attach($permIds));
+    }
+
+    /**
+     * Check if the role has a permission by its name.
+     *
+     * @param string|string[] $permission permission string or array of permissions
+     */
+    public function can($permission): bool
+    {
+        if (is_array($permission)) {
+            return $this->permissions()->where('name', 'IN', $permission)->count() === count($permission);
+        }
+
+        return (bool) $this->permissions()->where('name', $permission)->count();
     }
 
     /**

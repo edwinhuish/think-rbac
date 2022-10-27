@@ -2,7 +2,7 @@
 
 /**
  * @author Edwin Xu <171336747@qq.com>
- * @version 2022-10-26
+ * @version 2022-10-27
  */
 
 declare(strict_types=1);
@@ -31,6 +31,13 @@ interface RoleInterface
      * @return \think\model\Pivot[]|Collection
      */
     public function attachPermissions($permissions): Collection;
+
+    /**
+     * Check if user has a permission by its name.
+     *
+     * @param string|string[] $permission permission string or array of permissions
+     */
+    public function can($permission): bool;
 
     /**
      * Detach permission from current role.
