@@ -92,6 +92,14 @@ trait UserTrait
     }
 
     /**
+     * Check if has role.
+     */
+    public function hasRole(string $role): bool
+    {
+        return (bool) $this->roles()->where('name', $role)->count();
+    }
+
+    /**
      * Permissions.
      */
     public function permissions(): HasManyThrough

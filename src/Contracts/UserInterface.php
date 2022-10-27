@@ -53,6 +53,11 @@ interface UserInterface
     public function detachRoles($roles = null): int;
 
     /**
+     * Check if has role.
+     */
+    public function hasRole(string $role): bool;
+
+    /**
      * Permission.
      */
     public function permissions(): HasManyThrough;
